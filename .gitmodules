@@ -1,0 +1,3 @@
+[submodule "analytics-module"]
+	path = analytics-module
+	url = git@github.com:edvardskrumins/analytics-module.git
