@@ -1,0 +1,141 @@
+services:
+  mysql:
+    image: mysql:8.4
+    container_name: mysql
+    environment:
+      MYSQL_ROOT_PASSWORD: ${MYSQL_ROOT_PASSWORD}
+      MYSQL_DATABASE: ${MYSQL_DATABASE}
+      MYSQL_USER: ${MYSQL_USER}
+      MYSQL_PASSWORD: ${MYSQL_PASSWORD}
+    ports:
+      - "3306:3306"
+    volumes:
+      - mysql_data:/var/lib/mysql
+    networks:
+      - tet-ott-network
+    healthcheck:
+      test: ["CMD", "mysqladmin", "ping", "-h", "localhost"]
+      interval: 10s
+      timeout: 5s
+      retries: 5
+
+  php-content-module:
+    build:
+      context: .
+      dockerfile: docker/php/Dockerfile
+    container_name: content-module
+    environment:
+      DB_HOST: ${MYSQL_HOST}
+      DB_DATABASE: ${MYSQL_DATABASE}
+      DB_USERNAME: ${MYSQL_USER}
+      DB_PASSWORD: ${MYSQL_PASSWORD}
+      OCTANE_PORT: 8000
+      OCTANE_WORKERS: ${OCTANE_WORKERS}
+      OCTANE_TASK_WORKERS: ${OCTANE_TASK_WORKERS}
+    ports:
+      - "8000:8000"
+    networks:
+      - tet-ott-network
+    volumes:
+      - ./content-module:/var/www/html
+    depends_on:
+      mysql:
+        condition: service_healthy
+      redis:
+        condition: service_healthy
+      rabbitmq:
+        condition: service_healthy
+
+  php-analytics-module:
+    build:
+      context: .
+      dockerfile: docker/php/Dockerfile
+    container_name: analytics-module
+    environment:
+      DB_HOST: ${MYSQL_HOST}
+      DB_DATABASE: ${MYSQL_DATABASE}
+      DB_USERNAME: ${MYSQL_USER}
+      DB_PASSWORD: ${MYSQL_PASSWORD}
+      OCTANE_PORT: 8001
+      OCTANE_WORKERS: ${OCTANE_WORKERS}
+      OCTANE_TASK_WORKERS: ${OCTANE_TASK_WORKERS}
+    ports:
+      - "8001:8001"
+    networks:
+      - tet-ott-network
+    volumes:
+      - ./analytics-module:/var/www/html
+    depends_on:
+      mysql:
+        condition: service_healthy
+      redis:
+        condition: service_healthy
+      rabbitmq:
+        condition: service_healthy
+
+  php-tet-ott:
+    build:
+      context: .
+      dockerfile: docker/php/Dockerfile
+    container_name: tet-ott
+    environment:
+      DB_HOST: ${MYSQL_HOST}
+      DB_DATABASE: ${MYSQL_DATABASE}
+      DB_USERNAME: ${MYSQL_USER}
+      DB_PASSWORD: ${MYSQL_PASSWORD}
+      OCTANE_PORT: 8002
+      OCTANE_WORKERS: ${OCTANE_WORKERS}
+      OCTANE_TASK_WORKERS: ${OCTANE_TASK_WORKERS}
+    ports:
+      - "8002:8002"
+    networks:
+      - tet-ott-network
+    volumes:
+      - ./tet-ott:/var/www/html
+    depends_on:
+      mysql:
+        condition: service_healthy
+      redis:
+        condition: service_healthy
+      rabbitmq:
+        condition: service_healthy
+
+  redis:
+    image: redis:8.2.1
+    container_name: redis
+    healthcheck:
+      test: ["CMD", "redis-cli", "ping"]
+      interval: 10s
+      timeout: 5s
+      retries: 5
+    ports:
+      - "${REDIS_PORT:-6379}:6379"
+    networks:
+      - tet-ott-network
+    restart: "unless-stopped"
+
+  rabbitmq:
+    image: rabbitmq:4.2.1-management-alpine
+    container_name: rabbitmq
+    environment:
+      RABBITMQ_DEFAULT_USER: ${RABBITMQ_USER}
+      RABBITMQ_DEFAULT_PASS: ${RABBITMQ_PASSWORD}
+    ports:
+      - "5672:5672"
+      - "15672:15672"
+    networks:
+      - tet-ott-network
+    healthcheck:
+      test: ["CMD", "rabbitmq-diagnostics", "ping"]
+      interval: 10s
+      timeout: 5s
+      retries: 5
+    restart: "unless-stopped"
+
+networks:
+  tet-ott-network:
+    name: tet-ott-network
+
+volumes:
+  mysql_data:
+
