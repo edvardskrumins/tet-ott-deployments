@@ -1,3 +1,9 @@
 [submodule "analytics-module"]
 	path = analytics-module
 	url = git@github.com:edvardskrumins/analytics-module.git
+[submodule "content-module"]
+	path = content-module
+	url = git@github.com:edvardskrumins/content-module.git
+[submodule "helper-module"]
+	path = helper-module
+	url = git@github.com:edvardskrumins/helper-module.git
