@@ -7,3 +7,6 @@
 [submodule "helper-module"]
 	path = helper-module
 	url = git@github.com:edvardskrumins/helper-module.git
+[submodule "tet-ott"]
+	path = tet-ott
+	url = git@github.com:edvardskrumins/tet-ott.git
