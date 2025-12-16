@@ -46,8 +46,8 @@ docker compose exec php-tet-ott php artisan key:generate
 ## Tests
 Run PHPUnit functional tests with the following command:
 ```
-docker compose exec php-content-module php artisan test
-docker compose exec php-analytics-module php artisan test
+docker compose exec php-content-module php artisan test --testsuite=Feature
+docker compose exec php-analytics-module php artisan test --testsuite=Feature
 ```
 ### Check if returns content (visit in web browser)
 From ***content-module (server 1)***:
