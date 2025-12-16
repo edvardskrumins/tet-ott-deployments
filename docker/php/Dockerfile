@@ -43,6 +43,4 @@ RUN deluser www-data 2>/dev/null || true && \
 COPY docker/php/entrypoint.sh /usr/local/bin/entrypoint.sh
 RUN chmod +x /usr/local/bin/entrypoint.sh
 
-USER www-data
-
 ENTRYPOINT ["/usr/local/bin/entrypoint.sh"]
