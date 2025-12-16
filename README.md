@@ -66,7 +66,7 @@ docker compose exec php-tet-ott curl -X POST http://localhost:8002/api/analytics
   -H "Content-Type: application/json" \
   -d '{"content_id": 1, "action": "play"}'
 ``` 
-or directly from analytics-module:
+or directly from ***analytics-module (server 2)***:
 ```
 docker compose exec php-analytics-module curl -X POST http://localhost:8001/api/analytics-module/logs \
   -H "Content-Type: application/json" \
