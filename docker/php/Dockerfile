@@ -26,7 +26,10 @@ RUN install-php-extensions \
     redis \
     sockets \
     zip \
-    openswoole
+    openswoole \
+    xdebug
+
+COPY docker/php/xdebug.ini /usr/local/etc/php/conf.d/xdebug.ini
 
 COPY --from=composer:latest /usr/bin/composer /usr/bin/composer
 
